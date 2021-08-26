@@ -30,9 +30,11 @@ fn validate_schema(spec: &OpenAPI, schema: &Schema) -> Option<String> {
     let subschemas = subschemas(spec, schema);
     let mut iter = subschemas.into_iter();
 
-    const ERROR: &str = "mismatched types between subschemas; this is often \
+    const PRE: &str = "mismatched types between subschemas; this is often \
     due to enums with different data payloads and can be resolved using serde \
     adjacent tagging.";
+    const POST: &str = "For more info, see \
+    https://github.com/oxidecomputer/openapi-lint#type-mismatch";
 
     if let Some(first) = iter.next() {
         for ty in iter {
@@ -45,8 +47,8 @@ fn validate_schema(spec: &OpenAPI, schema: &Schema) -> Option<String> {
                 | (Type::Boolean {}, Type::Boolean {}) => {}
                 (a, b) => {
                     return Some(format!(
-                        "{}\nthis schema's type\n{:?}\ndiffers from this\n{:?}",
-                        ERROR, a, b
+                        "{}\nthis schema's type\n{:?}\ndiffers from this\n{:?}\n\n{}",
+                        PRE, a, b, POST,
                     ))
                 }
             }
