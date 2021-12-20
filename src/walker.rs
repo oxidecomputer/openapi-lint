@@ -96,7 +96,7 @@ impl<'a> SchemaWalker<'a> for PathItem {
 
     fn walk(&'a self) -> Self::SchemaIterator {
         self.iter()
-            .flat_map(SchemaWalker::walk)
+            .flat_map(|(_, op)| SchemaWalker::walk(op))
             .chain(self.parameters.iter().flat_map(SchemaWalker::walk))
             .collect::<Vec<_>>()
             .into_iter()

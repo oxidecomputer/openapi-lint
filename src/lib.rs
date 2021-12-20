@@ -66,6 +66,7 @@ fn subschemas<'a>(spec: &'a OpenAPI, schema: &'a Schema) -> Vec<&'a Type> {
             .iter()
             .flat_map(|subschema| subschemas(spec, resolve(subschema, spec).unwrap()))
             .collect(),
+        openapiv3::SchemaKind::Not { .. } => todo!(),
         openapiv3::SchemaKind::Type(t) => vec![t],
         openapiv3::SchemaKind::Any(_) => todo!(),
     }
