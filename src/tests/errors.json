@@ -10,6 +10,27 @@
     "version": "0.0.1"
   },
   "paths": {
+    "/unit/return": {
+      "get": {
+        "operationId": "unit_return",
+        "responses": {
+          "201": {
+            "description": "successful creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Null",
+                  "type": "string",
+                  "enum": [
+                    null
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hardware/racks": {
       "get": {
         "description": "List racks in the system.",
