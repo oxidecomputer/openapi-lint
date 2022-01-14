@@ -1,32 +1,44 @@
-// Copyright 2021 Oxide Computer Company
+// Copyright 2022 Oxide Computer Company
 
-use openapiv3::{OpenAPI, ReferenceOr, Schema, Type};
+//! This is a simple crate to validate OpenAPI v3.0.3 content. It flags
+//! constructs that we've determined are not "ergonomic" or "well-designed". In
+//! particular we try to avoid constructs that lead to structures that SDK
+//! generators would have a hard time turning into easy-to-use native
+//! constructs.
+
+use convert_case::{Case, Casing};
+use openapiv3::{OpenAPI, Operation, ReferenceOr, Schema, Type};
 
 mod walker;
 
 use walker::SchemaWalker;
 
-/// This is a simple crate to validate OpenAPI v3.0.3 content. It flags
-/// constructs that we've determined are not "ergonomic" or "well-designed". In
-/// particular we try to avoid constructs that lead to structures that SDK
-/// generators would have a hard time turning into easy-to-use native
-/// constructs.
-
 pub fn validate(spec: &OpenAPI) -> Vec<String> {
-    spec.walk()
-        .filter_map(|(name, schema)| {
-            validate_schema(spec, schema).map(|msg| {
+    let schema = spec.walk().flat_map(|(name, schema)| {
+        validate_subschemas(spec, schema)
+            .map(|msg| {
                 format!(
                     "problem with type {}: {}",
                     name.unwrap_or_else(|| "<unknown>".to_string()),
                     msg
                 )
             })
-        })
-        .collect()
+            .into_iter()
+            .chain(validate_object_camel_case(schema))
+    });
+
+    let operations = spec.operations().filter_map(validate_operation);
+    let named_schemas = spec.components.iter().flat_map(|components| {
+        components
+            .schemas
+            .keys()
+            .filter_map(|type_name| validate_named_schema(type_name))
+    });
+
+    schema.chain(operations).chain(named_schemas).collect()
 }
 
-fn validate_schema(spec: &OpenAPI, schema: &Schema) -> Option<String> {
+fn validate_subschemas(spec: &OpenAPI, schema: &Schema) -> Option<String> {
     let subschemas = subschemas(spec, schema);
     let mut iter = subschemas.into_iter();
 
@@ -47,7 +59,7 @@ fn validate_schema(spec: &OpenAPI, schema: &Schema) -> Option<String> {
                 | (Type::Boolean {}, Type::Boolean {}) => {}
                 (a, b) => {
                     return Some(format!(
-                        "{}\nthis schema's type\n{:?}\ndiffers from this\n{:?}\n\n{}",
+                        "{}\nthis schema's type\n{:#?}\ndiffers from this\n{:#?}\n\n{}",
                         PRE, a, b, POST,
                     ))
                 }
@@ -70,6 +82,68 @@ fn subschemas<'a>(spec: &'a OpenAPI, schema: &'a Schema) -> Vec<&'a Type> {
         openapiv3::SchemaKind::Type(t) => vec![t],
         openapiv3::SchemaKind::Any(_) => todo!(),
     }
+}
+
+fn validate_object_camel_case(schema: &Schema) -> Vec<String> {
+    let mut ret = Vec::new();
+
+    if let openapiv3::SchemaKind::Type(Type::Object(obj)) = &schema.schema_kind {
+        for prop_name in obj.properties.keys() {
+            let camel = prop_name.to_case(Case::Camel);
+            if prop_name.clone() != camel {
+                ret.push(format!(
+                    "an object contains a property '{}' which is not \
+                    camelCase:\n{:#?}\n\
+                    Add #[serde(rename = \"{}\")] to the member or \
+                    #[serde(rename_all = \"camelCase\" to the object\n\
+                    For more info see \
+                    https://github.com/oxidecomputer/openapi-lint#naming",
+                    prop_name, schema, camel
+                ))
+            }
+        }
+    }
+
+    ret
+}
+
+fn validate_operation(path_method_op: (&str, &str, &Operation)) -> Option<String> {
+    let (path, method, op) = path_method_op;
+
+    const INFO: &str = "For more info, see \
+    https://github.com/oxidecomputer/openapi-lint#naming";
+
+    if let Some(operation_id) = &op.operation_id {
+        let snake = operation_id.to_case(Case::Snake);
+        if operation_id.as_str() == snake {
+            return None;
+        }
+        Some(format!(
+            "The operation for {} {} is named \"{}\" which is not snake_case\n{}",
+            path, method, operation_id, INFO,
+        ))
+    } else {
+        Some(format!(
+            "The operation for {} {} does not have an operation_id\n{}",
+            path, method, INFO,
+        ))
+    }
+}
+
+fn validate_named_schema(type_name: &str) -> Option<String> {
+    const INFO: &str = "For more info, see \
+    https://github.com/oxidecomputer/openapi-lint#naming";
+
+    let pascal = type_name.to_case(Case::Pascal);
+    if type_name == pascal {
+        return None;
+    }
+
+    Some(format!(
+        "The type \"{}\" has a name that is not PascalCase; to rename it add \
+        #[serde(rename = \"{}\")]\n{}",
+        type_name, pascal, INFO,
+    ))
 }
 
 fn resolve<'a>(ref_or_schema: &'a ReferenceOr<Schema>, spec: &'a OpenAPI) -> Option<&'a Schema> {
