@@ -97,16 +97,16 @@ fn validate_object_camel_case(schema: &Schema) -> Vec<String> {
 
     if let openapiv3::SchemaKind::Type(Type::Object(obj)) = &schema.schema_kind {
         for prop_name in obj.properties.keys() {
-            let camel = prop_name.to_case(Case::Camel);
-            if prop_name.clone() != camel {
+            let snake = prop_name.to_case(Case::Snake);
+            if prop_name.clone() != snake {
                 ret.push(format!(
                     "an object contains a property '{}' which is not \
-                    camelCase:\n{:#?}\n\
+                    snake_case:\n{:#?}\n\
                     Add #[serde(rename = \"{}\")] to the member or \
-                    #[serde(rename_all = \"camelCase\" to the object\n\
+                    #[serde(rename_all = \"snake_case\")] to the struct.\n\
                     For more info see \
                     https://github.com/oxidecomputer/openapi-lint#naming",
-                    prop_name, schema, camel
+                    prop_name, schema, snake
                 ))
             }
         }

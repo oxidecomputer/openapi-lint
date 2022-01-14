@@ -65,29 +65,12 @@ This produces JSON like this:
 
 ### Naming
 
-- All struct (and struct enum variant) members should be camelCase.
-- All `operation_id`s should be snake_case.
-- All operation properties should be camelCase
+In general, we use the typical Rust naming conventions.
+
 - All type names should be PascalCase.
-
-To rename all fields in a struct do...
-
-```rust
-#[derive(JsonSchema)]
-#[serde(rename_all = "camelCase")]
-struct NeedsRenaming{
-    long_member_name: u32,
-    even_longer_snake_case_member_name: u8,
-}
-```
-
-Operation IDs come from the function name. If you obey the normal Rust
-convention, your functions are already snake_case. There isn't currently a
-facility to change the operation name; file an issue in
-(dropshot)[https://github.com/oxidecomputer/dropshot] if this is required.
-
-Operation parameter names from from dropshot `Extractor`s. Use 
-`#[serde(rename_all = "camelCase")]` to make them camelCase.
+- All `operation_id`s should be snake_case.
+- All operation properties should be snake_case
+- All struct (and struct enum variant) members should be snake_case.
 
 Type names are already PascalCase by normal Rust conventions. If you need
 (really?) to have a type with a non-PascalCase name, you can renamed it like
@@ -101,3 +84,8 @@ struct illumosIsAlwaysLowerCaseIGuess {
     // ...
 }
 ```
+
+Operation IDs come from the function name. If you obey the normal Rust
+convention, your functions are already snake_case. There isn't currently a
+facility to change the operation name; file an issue in
+(dropshot)[https://github.com/oxidecomputer/dropshot] if this is required.
