@@ -149,11 +149,11 @@ fn validate_operation_parameters(spec: &OpenAPI, op: &Operation) -> Vec<String> 
             let param = ref_or_param.item(&spec.components)?;
 
             let name = &param.parameter_data_ref().name;
-            let camel = name.to_case(Case::Camel);
+            let snake = name.to_case(Case::Snake);
 
-            if name.as_str() != camel {
+            if name.as_str() != snake {
                 Some(format!(
-                    "The parameter \"{}\" to {} should be camelCase.\n{}",
+                    "The parameter \"{}\" to {} should be snake_case.\n{}",
                     name, operation_id, INFO,
                 ))
             } else {
@@ -178,24 +178,6 @@ fn validate_named_schema(type_name: &str) -> Option<String> {
         type_name, pascal, INFO,
     ))
 }
-
-// fn resolve<'a>(ref_or_schema: &'a ReferenceOr<Schema>, spec: &'a OpenAPI) -> Option<&'a Schema> {
-//     match ref_or_schema {
-//         ReferenceOr::Reference { reference } => {
-//             const PREFIX: &str = "#/components/schemas/";
-//             if !reference.starts_with(PREFIX) {
-//                 None
-//             } else {
-//                 spec.components
-//                     .as_ref()?
-//                     .schemas
-//                     .get(&reference[PREFIX.len()..])
-//                     .and_then(|ros| resolve(ros, spec))
-//             }
-//         }
-//         ReferenceOr::Item(schema) => Some(schema),
-//     }
-// }
 
 trait ReferenceOrExt<T: ComponentLookup> {
     fn item<'a>(&'a self, components: &'a Option<Components>) -> Option<&'a T>;
