@@ -67,6 +67,7 @@ This produces JSON like this:
 
 - All struct (and struct enum variant) members should be camelCase.
 - All `operation_id`s should be snake_case.
+- All operation properties should be camelCase
 - All type names should be PascalCase.
 
 To rename all fields in a struct do...
@@ -84,6 +85,9 @@ Operation IDs come from the function name. If you obey the normal Rust
 convention, your functions are already snake_case. There isn't currently a
 facility to change the operation name; file an issue in
 (dropshot)[https://github.com/oxidecomputer/dropshot] if this is required.
+
+Operation parameter names from from dropshot `Extractor`s. Use 
+`#[serde(rename_all = "camelCase")]` to make them camelCase.
 
 Type names are already PascalCase by normal Rust conventions. If you need
 (really?) to have a type with a non-PascalCase name, you can renamed it like

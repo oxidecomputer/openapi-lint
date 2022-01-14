@@ -7,7 +7,8 @@
 //! constructs.
 
 use convert_case::{Case, Casing};
-use openapiv3::{OpenAPI, Operation, ReferenceOr, Schema, Type};
+use indexmap::IndexMap;
+use openapiv3::{Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, Type};
 
 mod walker;
 
@@ -27,7 +28,10 @@ pub fn validate(spec: &OpenAPI) -> Vec<String> {
             .chain(validate_object_camel_case(schema))
     });
 
-    let operations = spec.operations().filter_map(validate_operation);
+    let operations = spec.operations().filter_map(validate_operation_id);
+    let parameters = spec
+        .operations()
+        .flat_map(|(_, _, op)| validate_operation_parameters(spec, op));
     let named_schemas = spec.components.iter().flat_map(|components| {
         components
             .schemas
@@ -35,7 +39,11 @@ pub fn validate(spec: &OpenAPI) -> Vec<String> {
             .filter_map(|type_name| validate_named_schema(type_name))
     });
 
-    schema.chain(operations).chain(named_schemas).collect()
+    schema
+        .chain(operations)
+        .chain(parameters)
+        .chain(named_schemas)
+        .collect()
 }
 
 fn validate_subschemas(spec: &OpenAPI, schema: &Schema) -> Option<String> {
@@ -76,7 +84,7 @@ fn subschemas<'a>(spec: &'a OpenAPI, schema: &'a Schema) -> Vec<&'a Type> {
         | openapiv3::SchemaKind::AllOf { all_of: ofs }
         | openapiv3::SchemaKind::AnyOf { any_of: ofs } => ofs
             .iter()
-            .flat_map(|subschema| subschemas(spec, resolve(subschema, spec).unwrap()))
+            .flat_map(|subschema| subschemas(spec, subschema.item(&spec.components).unwrap()))
             .collect(),
         openapiv3::SchemaKind::Not { .. } => todo!(),
         openapiv3::SchemaKind::Type(t) => vec![t],
@@ -107,7 +115,7 @@ fn validate_object_camel_case(schema: &Schema) -> Vec<String> {
     ret
 }
 
-fn validate_operation(path_method_op: (&str, &str, &Operation)) -> Option<String> {
+fn validate_operation_id(path_method_op: (&str, &str, &Operation)) -> Option<String> {
     let (path, method, op) = path_method_op;
 
     const INFO: &str = "For more info, see \
@@ -130,6 +138,31 @@ fn validate_operation(path_method_op: (&str, &str, &Operation)) -> Option<String
     }
 }
 
+fn validate_operation_parameters(spec: &OpenAPI, op: &Operation) -> Vec<String> {
+    const INFO: &str = "For more info, see \
+    https://github.com/oxidecomputer/openapi-lint#naming";
+
+    let operation_id = op.operation_id.as_deref().unwrap_or("<unknown>");
+    op.parameters
+        .iter()
+        .filter_map(|ref_or_param| {
+            let param = ref_or_param.item(&spec.components)?;
+
+            let name = &param.parameter_data_ref().name;
+            let camel = name.to_case(Case::Camel);
+
+            if name.as_str() != camel {
+                Some(format!(
+                    "The parameter \"{}\" to {} should be camelCase.\n{}",
+                    name, operation_id, INFO,
+                ))
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
 fn validate_named_schema(type_name: &str) -> Option<String> {
     const INFO: &str = "For more info, see \
     https://github.com/oxidecomputer/openapi-lint#naming";
@@ -146,21 +179,54 @@ fn validate_named_schema(type_name: &str) -> Option<String> {
     ))
 }
 
-fn resolve<'a>(ref_or_schema: &'a ReferenceOr<Schema>, spec: &'a OpenAPI) -> Option<&'a Schema> {
-    match ref_or_schema {
-        ReferenceOr::Reference { reference } => {
-            const PREFIX: &str = "#/components/schemas/";
-            if !reference.starts_with(PREFIX) {
-                None
-            } else {
-                spec.components
-                    .as_ref()?
-                    .schemas
-                    .get(&reference[PREFIX.len()..])
-                    .and_then(|ros| resolve(ros, spec))
+// fn resolve<'a>(ref_or_schema: &'a ReferenceOr<Schema>, spec: &'a OpenAPI) -> Option<&'a Schema> {
+//     match ref_or_schema {
+//         ReferenceOr::Reference { reference } => {
+//             const PREFIX: &str = "#/components/schemas/";
+//             if !reference.starts_with(PREFIX) {
+//                 None
+//             } else {
+//                 spec.components
+//                     .as_ref()?
+//                     .schemas
+//                     .get(&reference[PREFIX.len()..])
+//                     .and_then(|ros| resolve(ros, spec))
+//             }
+//         }
+//         ReferenceOr::Item(schema) => Some(schema),
+//     }
+// }
+
+trait ReferenceOrExt<T: ComponentLookup> {
+    fn item<'a>(&'a self, components: &'a Option<Components>) -> Option<&'a T>;
+}
+trait ComponentLookup: Sized {
+    fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>>;
+}
+
+impl<T: ComponentLookup> ReferenceOrExt<T> for openapiv3::ReferenceOr<T> {
+    fn item<'a>(&'a self, components: &'a Option<Components>) -> Option<&'a T> {
+        match self {
+            ReferenceOr::Item(item) => Some(item),
+            ReferenceOr::Reference { reference } => {
+                let idx = reference.rfind('/').unwrap();
+                let key = &reference[idx + 1..];
+                let parameters = T::get_components(components.as_ref().unwrap());
+                parameters.get(key).unwrap().item(components)
             }
         }
-        ReferenceOr::Item(schema) => Some(schema),
+    }
+}
+
+impl ComponentLookup for Parameter {
+    fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>> {
+        &components.parameters
+    }
+}
+
+impl ComponentLookup for Schema {
+    fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>> {
+        &components.schemas
     }
 }
 
