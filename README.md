@@ -26,7 +26,7 @@ A JSON object that used this `enum` for the type of a field could look like this
 
 ```json
 {
-	"field": { "ThingA": "some value" }
+    "field": { "ThingA": "some value" }
 }
 ```
 
@@ -34,7 +34,7 @@ or this:
 
 ```json
 {
-	"field": "ThingB"
+    "field": "ThingB"
 }
 ```
 
@@ -58,7 +58,34 @@ This produces JSON like this:
 
 ```json
 {
-	"field1": { "type": "ThingA", "value": "some value" },
-	"field2": { "type": "ThingB" }
+    "field1": { "type": "ThingA", "value": "some value" },
+    "field2": { "type": "ThingB" }
 }
 ```
+
+### Naming
+
+In general, we use the typical Rust naming conventions.
+
+- All type names should be PascalCase.
+- All `operation_id`s should be snake_case.
+- All operation properties should be snake_case
+- All struct (and struct enum variant) members should be snake_case.
+
+Type names are already PascalCase by normal Rust conventions. If you need
+(really?) to have a type with a non-PascalCase name, you can renamed it like
+this:
+
+```rust
+#[derive(JsonSchema)]
+#[allow(non_camel_case_types)]
+#[serde(rename = "IllumosButUpperCase")]
+struct illumosIsAlwaysLowerCaseIGuess {
+    // ...
+}
+```
+
+Operation IDs come from the function name. If you obey the normal Rust
+convention, your functions are already snake_case. There isn't currently a
+facility to change the operation name; file an issue in
+(dropshot)[https://github.com/oxidecomputer/dropshot] if this is required.

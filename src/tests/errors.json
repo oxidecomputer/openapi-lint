@@ -573,7 +573,7 @@
       },
       "post": {
         "description": "Create an instance in a project.\n * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a \"reboot\" operation would return a 202 Accepted because there's no actual resource created?",
-        "operationId": "project_instances_post",
+        "operationId": "projectInstancesPost",
         "parameters": [
           {
             "in": "path",
@@ -1744,6 +1744,13 @@
         },
         "required": [
           "items"
+        ]
+      },
+      "fake_id_sort_mode": {
+        "description": "Supported set of sort modes for scanning by id only.\n\nCurrently, we only support scanning in ascending order.",
+        "type": "string",
+        "enum": [
+          "id-ascending"
         ]
       },
       "IdSortMode": {

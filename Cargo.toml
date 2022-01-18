@@ -11,8 +11,9 @@ keywords = ["openapi"]
 categories = ["web-programming::http-server"]
 
 [dependencies]
-indexmap = "1.6.2"
-openapiv3 = "1.0.0-beta.5"
+convert_case = "0.5"
+indexmap = "1.6"
+openapiv3 = "1.0.0"
 
 [dev-dependencies]
 expectorate = "1.0.3"
