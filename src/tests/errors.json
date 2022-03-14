@@ -31,6 +31,21 @@
         }
       }
     },
+    "/yolo/return": {
+      "get": {
+        "operationId": "unit_return",
+        "responses": {
+          "201": {
+            "description": "successful creation",
+            "content": {
+              "*/*": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/hardware/racks": {
       "get": {
         "description": "List racks in the system.",
