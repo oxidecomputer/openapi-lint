@@ -8,7 +8,7 @@
 
 use convert_case::{Boundary, Case, Casing, Converter};
 use indexmap::IndexMap;
-use openapiv3::{Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, Type};
+use openapiv3::{AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, Type};
 
 mod walker;
 
@@ -109,9 +109,10 @@ impl Validator {
                     self.subschemas(spec, subschema.item(&spec.components).unwrap())
                 })
                 .collect(),
-            openapiv3::SchemaKind::Not { .. } => todo!(),
+            openapiv3::SchemaKind::Not { .. } => todo!("'not' subschemas aren't handled"),
             openapiv3::SchemaKind::Type(t) => vec![t],
-            openapiv3::SchemaKind::Any(_) => todo!(),
+            openapiv3::SchemaKind::Any(any) if is_permissive(any) => vec![],
+            openapiv3::SchemaKind::Any(_) => todo!("complex 'any' schema not handled"),
         }
     }
 
@@ -200,6 +201,46 @@ impl Validator {
         #[serde(rename = \"{}\")]\n{}",
             type_name, pascal, INFO,
         ))
+    }
+}
+
+fn is_permissive(any: &AnySchema) -> bool {
+    match any {
+        AnySchema {
+            typ: None,
+            pattern: None,
+            multiple_of: None,
+            exclusive_minimum: None,
+            exclusive_maximum: None,
+            minimum: None,
+            maximum: None,
+            properties,
+            required,
+            additional_properties: None,
+            min_properties: None,
+            max_properties: None,
+            items: None,
+            min_items: None,
+            max_items: None,
+            unique_items: None,
+            enumeration,
+            format: None,
+            min_length: None,
+            max_length: None,
+            one_of,
+            all_of,
+            any_of,
+            not: None,
+        } if properties.is_empty()
+            && required.is_empty()
+            && enumeration.is_empty()
+            && one_of.is_empty()
+            && all_of.is_empty()
+            && any_of.is_empty() =>
+        {
+            true
+        }
+        _ => false,
     }
 }
 
