@@ -1,9 +1,10 @@
-// Copyright 2021 Oxide Computer Company
+// Copyright 2022 Oxide Computer Company
 
 use indexmap::IndexMap;
 use openapiv3::{
-    Components, MediaType, OpenAPI, Operation, Parameter, ParameterSchemaOrContent, PathItem,
-    ReferenceOr, RequestBody, Response, Schema,
+    AdditionalProperties, AnySchema, ArrayType, Components, MediaType, ObjectType, OpenAPI,
+    Operation, Parameter, ParameterSchemaOrContent, PathItem, ReferenceOr, RequestBody, Response,
+    Schema, Type,
 };
 
 pub(crate) trait SchemaWalker<'a> {
@@ -32,9 +33,20 @@ where
 
     fn walk(&'a self) -> Self::SchemaIterator {
         match self {
-            ReferenceOr::Reference { .. } => Vec::<(Option<String>, &Schema)>::new().into_iter(),
+            ReferenceOr::Reference { .. } => vec![].into_iter(),
             ReferenceOr::Item(walker) => walker.walk().collect::<Vec<_>>().into_iter(),
         }
+    }
+}
+
+impl<'a, T> SchemaWalker<'a> for Box<T>
+where
+    T: SchemaWalker<'a>,
+{
+    type SchemaIterator = std::vec::IntoIter<(Option<String>, &'a Schema)>;
+
+    fn walk(&'a self) -> Self::SchemaIterator {
+        self.as_ref().walk().collect::<Vec<_>>().into_iter()
     }
 }
 
@@ -195,13 +207,52 @@ impl<'a> SchemaWalker<'a> for RequestBody {
 }
 
 impl<'a> SchemaWalker<'a> for Schema {
-    type SchemaIterator = std::iter::Once<(Option<String>, &'a Schema)>;
+    type SchemaIterator = std::vec::IntoIter<(Option<String>, &'a Schema)>;
 
     fn walk(&'a self) -> Self::SchemaIterator {
-        // TODO deal with subschemas (any_of, one_of, all_of)
         // TODO deal with object properties and additional properties
         // TODO deal with array items
 
-        std::iter::once((None, self))
+        let children: Vec<_> = match &self.schema_kind {
+            openapiv3::SchemaKind::Type(Type::Object(ObjectType {
+                properties,
+                additional_properties,
+                ..
+            })) => {
+                let additional = match additional_properties {
+                    Some(AdditionalProperties::Schema(schema)) => schema.walk().collect(),
+                    _ => vec![],
+                };
+                properties
+                    .iter()
+                    .flat_map(|(_, prop)| match prop {
+                        ReferenceOr::Reference { .. } => vec![],
+                        ReferenceOr::Item(schema) => schema.walk().collect(),
+                    })
+                    .chain(additional)
+                    .collect()
+            }
+            openapiv3::SchemaKind::Type(Type::Array(ArrayType {
+                items: Some(schema),
+                ..
+            })) => schema.walk().collect(),
+            openapiv3::SchemaKind::Type(_) => vec![],
+
+            openapiv3::SchemaKind::OneOf { one_of: subschemas }
+            | openapiv3::SchemaKind::AllOf { all_of: subschemas }
+            | openapiv3::SchemaKind::AnyOf { any_of: subschemas } => {
+                subschemas.iter().flat_map(SchemaWalker::walk).collect()
+            }
+            openapiv3::SchemaKind::Not { .. } => todo!(),
+
+            // TODO we may need to look in here...
+            openapiv3::SchemaKind::Any(AnySchema { .. }) => vec![],
+        };
+
+        children
+            .into_iter()
+            .chain(std::iter::once((None, self)))
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }

@@ -67,12 +67,17 @@ This produces JSON like this:
 
 In general, we use the typical Rust naming conventions.
 
-- All type names should be PascalCase.
-- All `operation_id`s should be snake_case.
-- All operation properties should be snake_case
-- All struct (and struct enum variant) members should be snake_case.
+- All type names should be `PascalCase`.
+- All `operation_id`s should be `snake_case`.
+- All operation properties should be `snake_case`.
+- All struct (and struct enum variant) members should be `snake_case`.
+- All enum variants should be `snake_case`. (Note that depending on the serde
+tagging scheme used, variant names may appear in OpenAPI as either struct
+property names (external tagging) or as constant values (internal or adjacent
+tagging). The choice of `snake_case` makes naming uniform regardless of the
+tagging scheme.)
 
-Type names are already PascalCase by normal Rust conventions. If you need
+Type names are already `PascalCase` by normal Rust conventions. If you need
 (really?) to have a type with a non-PascalCase name, you can renamed it like
 this:
 
@@ -89,3 +94,27 @@ Operation IDs come from the function name. If you obey the normal Rust
 convention, your functions are already snake_case. There isn't currently a
 facility to change the operation name; file an issue in
 (dropshot)[https://github.com/oxidecomputer/dropshot] if this is required.
+
+Rust `enum`s typically name variants with `PascalCase`. Typically you'll rename
+them all to `snake_case`:
+
+```rust
+#[derive(JsonSchema)]
+#[serde(rename_all = "snake_case")]
+enum Things {
+    ThingA,
+    ThingB,
+}
+```
+
+Sometimes you might prefer `SCREAMING_SNAKE_CASE` e.g. for things that are more
+typically abbreviated:
+
+```rust
+#[derive(JsonSchema)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+enum Things {
+    ThingA,
+    ThingB,
+}
+```
