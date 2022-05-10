@@ -148,7 +148,7 @@ impl Validator {
                     if label != &lower && label != &upper {
                         ret.push(format!(
                             "An enumerated string contains a value '{}' that \
-                            is neither snake_case not \
+                            is neither snake_case nor \
                             SCREAMING_SNAKE_CASE:\n{:#?}\n\
                             Add #[serde(rename = \"{}\")] to the variant or \
                             #[serde(rename_all = \"snake_case\")] to the enum.\n\

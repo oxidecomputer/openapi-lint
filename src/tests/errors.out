@@ -1,4 +1,4 @@
-An enumerated string contains a value 'InjectedError' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'InjectedError' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -5398,7 +5398,7 @@ Schema {
 Add #[serde(rename = "time_modified")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-An enumerated string contains a value 'id-ascending' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'id-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -5434,7 +5434,7 @@ Schema {
 Add #[serde(rename = "id_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-An enumerated string contains a value 'id-ascending' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'id-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -5470,7 +5470,7 @@ Schema {
 Add #[serde(rename = "id_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-An enumerated string contains a value 'name-ascending' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'name-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -5512,7 +5512,7 @@ Schema {
 Add #[serde(rename = "name_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-An enumerated string contains a value 'name-descending' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'name-descending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -5554,7 +5554,7 @@ Schema {
 Add #[serde(rename = "name_descending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-An enumerated string contains a value 'id-ascending' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'id-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -5596,7 +5596,7 @@ Schema {
 Add #[serde(rename = "id_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-An enumerated string contains a value 'name-ascending' that is neither snake_case not SCREAMING_SNAKE_CASE:
+An enumerated string contains a value 'name-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
 Schema {
     schema_data: SchemaData {
         nullable: false,
