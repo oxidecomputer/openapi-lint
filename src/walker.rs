@@ -210,10 +210,9 @@ impl<'a> SchemaWalker<'a> for Schema {
     type SchemaIterator = std::vec::IntoIter<(Option<String>, &'a Schema)>;
 
     fn walk(&'a self) -> Self::SchemaIterator {
-        // TODO deal with object properties and additional properties
-        // TODO deal with array items
-
         let children: Vec<_> = match &self.schema_kind {
+            // Objects have properties and additional (i.e. arbitrarily-
+            // named) properties that have schemas.
             openapiv3::SchemaKind::Type(Type::Object(ObjectType {
                 properties,
                 additional_properties,
@@ -232,18 +231,22 @@ impl<'a> SchemaWalker<'a> for Schema {
                     .chain(additional)
                     .collect()
             }
+            // Arrays have items with schemas.
             openapiv3::SchemaKind::Type(Type::Array(ArrayType {
                 items: Some(schema),
                 ..
             })) => schema.walk().collect(),
+            // Other types don't have subordinate schemas.
             openapiv3::SchemaKind::Type(_) => vec![],
 
+            // Lists of subschemas...
             openapiv3::SchemaKind::OneOf { one_of: subschemas }
             | openapiv3::SchemaKind::AllOf { all_of: subschemas }
             | openapiv3::SchemaKind::AnyOf { any_of: subschemas } => {
                 subschemas.iter().flat_map(SchemaWalker::walk).collect()
             }
-            openapiv3::SchemaKind::Not { .. } => todo!(),
+            // Not is an odd case, but it should still be formatted properly...
+            openapiv3::SchemaKind::Not { not } => not.walk().collect(),
 
             // TODO we may need to look in here...
             openapiv3::SchemaKind::Any(AnySchema { .. }) => vec![],
