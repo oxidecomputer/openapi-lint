@@ -1,4 +1,447 @@
-problem with type ActionError: mismatched types between subschemas; this is often due to enums with different data payloads and can be resolved using serde adjacent tagging.
+An enumerated string contains a value 'InjectedError' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: None,
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "InjectedError",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "injected_error")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An object contains a property 'ActionFailed' which is not snake_case:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Action failed due to a consumer-specific error",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        Object(
+            ObjectType {
+                properties: {
+                    "ActionFailed": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                Object(
+                                    ObjectType {
+                                        properties: {
+                                            "source_error": Item(
+                                                Schema {
+                                                    schema_data: SchemaData {
+                                                        nullable: false,
+                                                        read_only: false,
+                                                        write_only: false,
+                                                        deprecated: false,
+                                                        external_docs: None,
+                                                        example: None,
+                                                        title: None,
+                                                        description: None,
+                                                        discriminator: None,
+                                                        default: None,
+                                                        extensions: {},
+                                                    },
+                                                    schema_kind: Any(
+                                                        AnySchema {
+                                                            typ: None,
+                                                            pattern: None,
+                                                            multiple_of: None,
+                                                            exclusive_minimum: None,
+                                                            exclusive_maximum: None,
+                                                            minimum: None,
+                                                            maximum: None,
+                                                            properties: {},
+                                                            required: [],
+                                                            additional_properties: None,
+                                                            min_properties: None,
+                                                            max_properties: None,
+                                                            items: None,
+                                                            min_items: None,
+                                                            max_items: None,
+                                                            unique_items: None,
+                                                            enumeration: [],
+                                                            format: None,
+                                                            min_length: None,
+                                                            max_length: None,
+                                                            one_of: [],
+                                                            all_of: [],
+                                                            any_of: [],
+                                                            not: None,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        },
+                                        required: [
+                                            "source_error",
+                                        ],
+                                        additional_properties: None,
+                                        min_properties: None,
+                                        max_properties: None,
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                required: [
+                    "ActionFailed",
+                ],
+                additional_properties: Some(
+                    Any(
+                        false,
+                    ),
+                ),
+                min_properties: None,
+                max_properties: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "action_failed")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An object contains a property 'DeserializeFailed' which is not snake_case:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "The framework failed to deserialize the saga parameters, an action's successful result, or an action's error.",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        Object(
+            ObjectType {
+                properties: {
+                    "DeserializeFailed": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                Object(
+                                    ObjectType {
+                                        properties: {
+                                            "message": Item(
+                                                Schema {
+                                                    schema_data: SchemaData {
+                                                        nullable: false,
+                                                        read_only: false,
+                                                        write_only: false,
+                                                        deprecated: false,
+                                                        external_docs: None,
+                                                        example: None,
+                                                        title: None,
+                                                        description: None,
+                                                        discriminator: None,
+                                                        default: None,
+                                                        extensions: {},
+                                                    },
+                                                    schema_kind: Type(
+                                                        String(
+                                                            StringType {
+                                                                format: Empty,
+                                                                pattern: None,
+                                                                enumeration: [],
+                                                                min_length: None,
+                                                                max_length: None,
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
+                                            ),
+                                        },
+                                        required: [
+                                            "message",
+                                        ],
+                                        additional_properties: None,
+                                        min_properties: None,
+                                        max_properties: None,
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                required: [
+                    "DeserializeFailed",
+                ],
+                additional_properties: Some(
+                    Any(
+                        false,
+                    ),
+                ),
+                min_properties: None,
+                max_properties: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "deserialize_failed")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An object contains a property 'SerializeFailed' which is not snake_case:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "The framework failed to serialize the saga parameters, an action's successful result, or an action's error.",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        Object(
+            ObjectType {
+                properties: {
+                    "SerializeFailed": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                Object(
+                                    ObjectType {
+                                        properties: {
+                                            "message": Item(
+                                                Schema {
+                                                    schema_data: SchemaData {
+                                                        nullable: false,
+                                                        read_only: false,
+                                                        write_only: false,
+                                                        deprecated: false,
+                                                        external_docs: None,
+                                                        example: None,
+                                                        title: None,
+                                                        description: None,
+                                                        discriminator: None,
+                                                        default: None,
+                                                        extensions: {},
+                                                    },
+                                                    schema_kind: Type(
+                                                        String(
+                                                            StringType {
+                                                                format: Empty,
+                                                                pattern: None,
+                                                                enumeration: [],
+                                                                min_length: None,
+                                                                max_length: None,
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
+                                            ),
+                                        },
+                                        required: [
+                                            "message",
+                                        ],
+                                        additional_properties: None,
+                                        min_properties: None,
+                                        max_properties: None,
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                required: [
+                    "SerializeFailed",
+                ],
+                additional_properties: Some(
+                    Any(
+                        false,
+                    ),
+                ),
+                min_properties: None,
+                max_properties: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "serialize_failed")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An object contains a property 'SubsagaCreateFailed' which is not snake_case:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "The framework failed to create the requested subsaga",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        Object(
+            ObjectType {
+                properties: {
+                    "SubsagaCreateFailed": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                Object(
+                                    ObjectType {
+                                        properties: {
+                                            "message": Item(
+                                                Schema {
+                                                    schema_data: SchemaData {
+                                                        nullable: false,
+                                                        read_only: false,
+                                                        write_only: false,
+                                                        deprecated: false,
+                                                        external_docs: None,
+                                                        example: None,
+                                                        title: None,
+                                                        description: None,
+                                                        discriminator: None,
+                                                        default: None,
+                                                        extensions: {},
+                                                    },
+                                                    schema_kind: Type(
+                                                        String(
+                                                            StringType {
+                                                                format: Empty,
+                                                                pattern: None,
+                                                                enumeration: [],
+                                                                min_length: None,
+                                                                max_length: None,
+                                                            },
+                                                        ),
+                                                    ),
+                                                },
+                                            ),
+                                        },
+                                        required: [
+                                            "message",
+                                        ],
+                                        additional_properties: None,
+                                        min_properties: None,
+                                        max_properties: None,
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                required: [
+                    "SubsagaCreateFailed",
+                ],
+                additional_properties: Some(
+                    Any(
+                        false,
+                    ),
+                ),
+                min_properties: None,
+                max_properties: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "subsaga_create_failed")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+Problem with type ActionError: Mismatched types between subschemas; this is often due to enums with different data payloads and can be resolved using serde adjacent tagging.
 this schema's type
 String(
     StringType {
@@ -109,7 +552,7 @@ Object(
 
 For more info, see https://github.com/oxidecomputer/openapi-lint#type-mismatch
 
-an object contains a property 'diskId' which is not snake_case:
+An object contains a property 'diskId' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -213,7 +656,7 @@ Schema {
 Add #[serde(rename = "disk_id")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'diskName' which is not snake_case:
+An object contains a property 'diskName' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -317,7 +760,7 @@ Schema {
 Add #[serde(rename = "disk_name")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'diskState' which is not snake_case:
+An object contains a property 'diskState' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -421,7 +864,7 @@ Schema {
 Add #[serde(rename = "disk_state")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'instanceId' which is not snake_case:
+An object contains a property 'instanceId' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -525,7 +968,7 @@ Schema {
 Add #[serde(rename = "instance_id")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'snapshotId' which is not snake_case:
+An object contains a property 'snapshotId' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -628,7 +1071,7 @@ Schema {
 Add #[serde(rename = "snapshot_id")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-problem with type DiskState: mismatched types between subschemas; this is often due to enums with different data payloads and can be resolved using serde adjacent tagging.
+Problem with type DiskState: Mismatched types between subschemas; this is often due to enums with different data payloads and can be resolved using serde adjacent tagging.
 this schema's type
 String(
     StringType {
@@ -702,7 +1145,7 @@ Object(
 
 For more info, see https://github.com/oxidecomputer/openapi-lint#type-mismatch
 
-an object contains a property 'devicePath' which is not snake_case:
+An object contains a property 'devicePath' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -968,7 +1411,7 @@ Schema {
 Add #[serde(rename = "device_path")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'projectId' which is not snake_case:
+An object contains a property 'projectId' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -1234,7 +1677,7 @@ Schema {
 Add #[serde(rename = "project_id")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'snapshotId' which is not snake_case:
+An object contains a property 'snapshotId' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -1500,7 +1943,7 @@ Schema {
 Add #[serde(rename = "snapshot_id")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeCreated' which is not snake_case:
+An object contains a property 'timeCreated' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -1766,7 +2209,7 @@ Schema {
 Add #[serde(rename = "time_created")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeModified' which is not snake_case:
+An object contains a property 'timeModified' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -2032,7 +2475,7 @@ Schema {
 Add #[serde(rename = "time_modified")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeCreated' which is not snake_case:
+An object contains a property 'timeCreated' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -2200,7 +2643,7 @@ Schema {
 Add #[serde(rename = "time_created")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeModified' which is not snake_case:
+An object contains a property 'timeModified' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -2368,7 +2811,7 @@ Schema {
 Add #[serde(rename = "time_modified")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'projectId' which is not snake_case:
+An object contains a property 'projectId' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -2643,7 +3086,7 @@ Schema {
 Add #[serde(rename = "project_id")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'runState' which is not snake_case:
+An object contains a property 'runState' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -2918,7 +3361,7 @@ Schema {
 Add #[serde(rename = "run_state")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeCreated' which is not snake_case:
+An object contains a property 'timeCreated' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -3193,7 +3636,7 @@ Schema {
 Add #[serde(rename = "time_created")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeModified' which is not snake_case:
+An object contains a property 'timeModified' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -3468,7 +3911,7 @@ Schema {
 Add #[serde(rename = "time_modified")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeRunStateUpdated' which is not snake_case:
+An object contains a property 'timeRunStateUpdated' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -3743,7 +4186,7 @@ Schema {
 Add #[serde(rename = "time_run_state_updated")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeCreated' which is not snake_case:
+An object contains a property 'timeCreated' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -3911,7 +4354,7 @@ Schema {
 Add #[serde(rename = "time_created")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeModified' which is not snake_case:
+An object contains a property 'timeModified' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -4079,7 +4522,175 @@ Schema {
 Add #[serde(rename = "time_modified")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-problem with type SagaStateView: mismatched types between subschemas; this is often due to enums with different data payloads and can be resolved using serde adjacent tagging.
+An object contains a property 'errorInfo' which is not snake_case:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: None,
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        Object(
+            ObjectType {
+                properties: {
+                    "errorInfo": Reference {
+                        reference: "#/components/schemas/ActionError",
+                    },
+                    "errorNodeName": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                String(
+                                    StringType {
+                                        format: Empty,
+                                        pattern: None,
+                                        enumeration: [],
+                                        min_length: None,
+                                        max_length: None,
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    "failed": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                Boolean,
+                            ),
+                        },
+                    ),
+                },
+                required: [
+                    "failed",
+                ],
+                additional_properties: None,
+                min_properties: None,
+                max_properties: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "error_info")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An object contains a property 'errorNodeName' which is not snake_case:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: None,
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        Object(
+            ObjectType {
+                properties: {
+                    "errorInfo": Reference {
+                        reference: "#/components/schemas/ActionError",
+                    },
+                    "errorNodeName": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                String(
+                                    StringType {
+                                        format: Empty,
+                                        pattern: None,
+                                        enumeration: [],
+                                        min_length: None,
+                                        max_length: None,
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    "failed": Item(
+                        Schema {
+                            schema_data: SchemaData {
+                                nullable: false,
+                                read_only: false,
+                                write_only: false,
+                                deprecated: false,
+                                external_docs: None,
+                                example: None,
+                                title: None,
+                                description: None,
+                                discriminator: None,
+                                default: None,
+                                extensions: {},
+                            },
+                            schema_kind: Type(
+                                Boolean,
+                            ),
+                        },
+                    ),
+                },
+                required: [
+                    "failed",
+                ],
+                additional_properties: None,
+                min_properties: None,
+                max_properties: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "error_node_name")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+Problem with type SagaStateView: Mismatched types between subschemas; this is often due to enums with different data payloads and can be resolved using serde adjacent tagging.
 this schema's type
 String(
     StringType {
@@ -4196,7 +4807,7 @@ Object(
 
 For more info, see https://github.com/oxidecomputer/openapi-lint#type-mismatch
 
-an object contains a property 'serviceAddress' which is not snake_case:
+An object contains a property 'serviceAddress' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -4393,7 +5004,7 @@ Schema {
 Add #[serde(rename = "service_address")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeCreated' which is not snake_case:
+An object contains a property 'timeCreated' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -4590,7 +5201,7 @@ Schema {
 Add #[serde(rename = "time_created")] to the member or #[serde(rename_all = "snake_case")] to the struct.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
-an object contains a property 'timeModified' which is not snake_case:
+An object contains a property 'timeModified' which is not snake_case:
 Schema {
     schema_data: SchemaData {
         nullable: false,
@@ -4785,6 +5396,240 @@ Schema {
     ),
 }
 Add #[serde(rename = "time_modified")] to the member or #[serde(rename_all = "snake_case")] to the struct.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An enumerated string contains a value 'id-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Supported set of sort modes for scanning by id only.\n\nCurrently, we only support scanning in ascending order.",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "id-ascending",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "id_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An enumerated string contains a value 'id-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Supported set of sort modes for scanning by id only.\n\nCurrently, we only support scanning in ascending order.",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "id-ascending",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "id_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An enumerated string contains a value 'name-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Supported set of sort modes for scanning by name or id",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "name-ascending",
+                    ),
+                    Some(
+                        "name-descending",
+                    ),
+                    Some(
+                        "id-ascending",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "name_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An enumerated string contains a value 'name-descending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Supported set of sort modes for scanning by name or id",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "name-ascending",
+                    ),
+                    Some(
+                        "name-descending",
+                    ),
+                    Some(
+                        "id-ascending",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "name_descending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An enumerated string contains a value 'id-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Supported set of sort modes for scanning by name or id",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "name-ascending",
+                    ),
+                    Some(
+                        "name-descending",
+                    ),
+                    Some(
+                        "id-ascending",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "id_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
+For more info see https://github.com/oxidecomputer/openapi-lint#naming
+
+An enumerated string contains a value 'name-ascending' that is neither snake_case nor SCREAMING_SNAKE_CASE:
+Schema {
+    schema_data: SchemaData {
+        nullable: false,
+        read_only: false,
+        write_only: false,
+        deprecated: false,
+        external_docs: None,
+        example: None,
+        title: None,
+        description: Some(
+            "Supported set of sort modes for scanning by name only\n\nCurrently, we only support scanning in ascending order.",
+        ),
+        discriminator: None,
+        default: None,
+        extensions: {},
+    },
+    schema_kind: Type(
+        String(
+            StringType {
+                format: Empty,
+                pattern: None,
+                enumeration: [
+                    Some(
+                        "name-ascending",
+                    ),
+                ],
+                min_length: None,
+                max_length: None,
+            },
+        ),
+    ),
+}
+Add #[serde(rename = "name_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
 The operation for /projects/{project_name}/instances post is named "projectInstancesPost" which is not snake_case
