@@ -1790,6 +1790,18 @@
         "enum": [
           "name-ascending"
         ]
+      },
+      "Things": {
+        "type": "object",
+        "properties": {
+          "my_uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "my_uuid"
+        ]
       }
     }
   }

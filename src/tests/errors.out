@@ -5632,6 +5632,9 @@ Schema {
 Add #[serde(rename = "name_ascending")] to the variant or #[serde(rename_all = "snake_case")] to the enum.
 For more info see https://github.com/oxidecomputer/openapi-lint#naming
 
+An object contains a property 'my_uuid' that is a uuid and redundantly ends with `_uuid`'; rename this property to `my_id`.
+For more info see https://github.com/oxidecomputer/openapi-lint#uuids
+
 The operation for /projects/{project_name}/instances post is named "projectInstancesPost" which is not snake_case
 For more info, see https://github.com/oxidecomputer/openapi-lint#naming
 

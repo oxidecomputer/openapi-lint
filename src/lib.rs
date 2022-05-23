@@ -9,7 +9,8 @@
 use heck::{ToPascalCase, ToShoutySnakeCase, ToSnakeCase};
 use indexmap::IndexMap;
 use openapiv3::{
-    AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, StringType, Type,
+    AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, SchemaKind,
+    StringType, Type, VariantOrUnknownOrEmpty,
 };
 
 mod walker;
@@ -38,7 +39,7 @@ impl Validator {
                     msg
                 )
             });
-            let properties = self.validate_object_camel_case(schema);
+            let properties = self.validate_object(schema);
             let enum_values = self.validate_enumeration_value(schema);
             subs.into_iter().chain(properties).chain(enum_values)
         });
@@ -112,7 +113,7 @@ impl Validator {
         }
     }
 
-    fn validate_object_camel_case(&self, schema: &Schema) -> Vec<String> {
+    fn validate_object(&self, schema: &Schema) -> Vec<String> {
         let mut ret = Vec::new();
 
         if let openapiv3::SchemaKind::Type(Type::Object(obj)) = &schema.schema_kind {
@@ -128,6 +129,33 @@ impl Validator {
                         https://github.com/oxidecomputer/openapi-lint#naming",
                         prop_name, schema, snake
                     ))
+                }
+            }
+
+            for (prop_name, prop_schema) in obj.properties.iter() {
+                if prop_name.ends_with("_uuid") {
+                    match prop_schema.as_item().map(Box::as_ref) {
+                        Some(Schema {
+                            schema_kind:
+                                SchemaKind::Type(Type::String(StringType {
+                                    format: VariantOrUnknownOrEmpty::Unknown(format),
+                                    pattern: None,
+                                    enumeration,
+                                    min_length: None,
+                                    max_length: None,
+                                })),
+                            ..
+                        }) if format == "uuid" && enumeration.is_empty() => ret.push(format!(
+                            "An object contains a property '{}' that is a \
+                            uuid and redundantly ends with `_uuid`'; rename \
+                            this property to `{}_id`.\n\
+                            For more info see \
+                            https://github.com/oxidecomputer/openapi-lint#uuids",
+                            prop_name,
+                            prop_name.trim_end_matches("_uuid"),
+                        )),
+                        _ => (),
+                    }
                 }
             }
         }

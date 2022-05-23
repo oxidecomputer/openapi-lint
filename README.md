@@ -118,3 +118,8 @@ enum Things {
     ThingB,
 }
 ```
+
+### UUIDs
+
+It's tempting to name fields that are UUIDs with an `_uuid` suffix, but this
+is redundant. For simplicity and consistency we use the `_id` suffix instead.
