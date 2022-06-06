@@ -12,7 +12,7 @@ categories = ["web-programming::http-server"]
 
 [dependencies]
 heck = "0.4.0"
-indexmap = "1.6"
+indexmap = "1.8"
 openapiv3 = "1.0"
 
 [dev-dependencies]
