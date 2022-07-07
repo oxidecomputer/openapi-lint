@@ -123,3 +123,58 @@ enum Things {
 
 It's tempting to name fields that are UUIDs with an `_uuid` suffix, but this
 is redundant. For simplicity and consistency we use the `_id` suffix instead.
+
+### Trivial Null Response
+
+(Drophot)[https://github.com/oxidecomputer/dropshot] makes it easy (too easy!)
+to accidentally return a `null` response when you intend to return an empty
+response.
+
+Consider this handler:
+
+```rust
+#[endpoint {
+    method = POST,
+    path = "/device/confirm",
+}]
+pub async fn device_auth_confirm(
+    rqctx: Arc<RequestContext<Arc<ServerContext>>>,
+) -> Result<HttpResponseOk<()>, HttpError> {
+    // ...
+}
+```
+
+The corresponding OpenAPI `responses` will be:
+
+```json
+{
+  "200": {
+    "description": "successful operation",
+    "content": {
+      "application/json": {
+        "schema": {
+          "title": "Null",
+          "type": "string",
+          "enum": [
+            null
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+Instead, use `HttpResponseUpdatedNoContent`:
+
+```rust
+#[endpoint {
+    method = POST,
+    path = "/device/confirm",
+}]
+pub async fn device_auth_confirm(
+    rqctx: Arc<RequestContext<Arc<ServerContext>>>,
+) -> Result<HttpResponseUpdatedNoContent, HttpError> {
+    // ...
+}
+```
