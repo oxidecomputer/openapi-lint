@@ -5638,5 +5638,8 @@ For more info see https://github.com/oxidecomputer/openapi-lint#uuids
 The operation for /projects/{project_name}/instances post is named "projectInstancesPost" which is not snake_case
 For more info, see https://github.com/oxidecomputer/openapi-lint#naming
 
+The return type for unit_return was a trivial null.
+For more info, see https://github.com/oxidecomputer/openapi-lint#trivial-null-response
+
 The type "fake_id_sort_mode" has a name that is not PascalCase; to rename it add #[serde(rename = "FakeIdSortMode")]
 For more info, see https://github.com/oxidecomputer/openapi-lint#naming

@@ -33,7 +33,7 @@
     },
     "/yolo/return": {
       "get": {
-        "operationId": "unit_return",
+        "operationId": "yolo_return",
         "responses": {
           "201": {
             "description": "successful creation",

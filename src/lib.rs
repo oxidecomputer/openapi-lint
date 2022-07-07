@@ -9,8 +9,8 @@
 use heck::{ToPascalCase, ToShoutySnakeCase, ToSnakeCase};
 use indexmap::IndexMap;
 use openapiv3::{
-    AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, SchemaKind,
-    StringType, Type, VariantOrUnknownOrEmpty,
+    AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Response, Schema,
+    SchemaKind, StringType, Type, VariantOrUnknownOrEmpty,
 };
 
 mod walker;
@@ -50,6 +50,9 @@ impl Validator {
         let parameters = spec
             .operations()
             .flat_map(|(_, _, op)| self.validate_operation_parameters(spec, op));
+        let responses = spec
+            .operations()
+            .flat_map(|(_, _, op)| self.validate_operation_response(spec, op));
         let named_schemas = spec.components.iter().flat_map(|components| {
             components
                 .schemas
@@ -60,6 +63,7 @@ impl Validator {
         schema
             .chain(operations)
             .chain(parameters)
+            .chain(responses)
             .chain(named_schemas)
             .collect()
     }
@@ -239,6 +243,32 @@ impl Validator {
             .collect()
     }
 
+    fn validate_operation_response(&self, spec: &OpenAPI, op: &Operation) -> Vec<String> {
+        const INFO: &str = "For more info, see \
+            https://github.com/oxidecomputer/openapi-lint#trivial-null-response";
+
+        let operation_id = op.operation_id.as_deref().unwrap_or("<unknown>");
+
+        op.responses
+            .responses
+            .iter()
+            .filter_map(|(_, x)| x.item(&spec.components))
+            .flat_map(|response| response.content.iter())
+            .filter_map(|(_, media_type)| media_type.schema.as_ref())
+            .filter_map(|schema| match schema.item(&spec.components)? {
+                Schema {
+                    schema_kind: SchemaKind::Type(Type::String(StringType { enumeration, .. })),
+                    ..
+                } if enumeration.len() == 1 && enumeration.first() == Some(&None) => Some(format!(
+                    "The return type for {} was a trivial null.\n{}",
+                    operation_id, INFO,
+                )),
+
+                _ => None,
+            })
+            .collect()
+    }
+
     fn validate_named_schema(&self, type_name: &str) -> Option<String> {
         const INFO: &str = "For more info, see \
             https://github.com/oxidecomputer/openapi-lint#naming";
@@ -310,8 +340,8 @@ impl<T: ComponentLookup> ReferenceOrExt<T> for openapiv3::ReferenceOr<T> {
             ReferenceOr::Reference { reference } => {
                 let idx = reference.rfind('/').unwrap();
                 let key = &reference[idx + 1..];
-                let parameters = T::get_components(components.as_ref().unwrap());
-                parameters.get(key).unwrap().item(components)
+                let items = T::get_components(components.as_ref().unwrap());
+                items.get(key).unwrap().item(components)
             }
         }
     }
@@ -326,6 +356,12 @@ impl ComponentLookup for Parameter {
 impl ComponentLookup for Schema {
     fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>> {
         &components.schemas
+    }
+}
+
+impl ComponentLookup for Response {
+    fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>> {
+        &components.responses
     }
 }
 
