@@ -6,7 +6,7 @@
 //! generators would have a hard time turning into easy-to-use native
 //! constructs.
 
-use heck::{ToPascalCase, ToShoutySnakeCase, ToSnakeCase};
+use heck::{ToKebabCase, ToPascalCase, ToShoutySnakeCase, ToSnakeCase};
 use indexmap::IndexMap;
 use openapiv3::{
     AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Schema, SchemaKind,
@@ -44,6 +44,10 @@ impl Validator {
             subs.into_iter().chain(properties).chain(enum_values)
         });
 
+        let paths = spec
+            .paths
+            .iter()
+            .filter_map(|(path, _)| self.validate_path(path));
         let operations = spec
             .operations()
             .filter_map(|path_method_op| self.validate_operation_id(path_method_op));
@@ -58,6 +62,7 @@ impl Validator {
         });
 
         schema
+            .chain(paths)
             .chain(operations)
             .chain(parameters)
             .chain(named_schemas)
@@ -189,6 +194,21 @@ impl Validator {
             });
         }
         ret
+    }
+
+    fn validate_path(&self, path: &str) -> Option<String> {
+        const INFO: &str = "For more info, see \
+            https://github.com/oxidecomputer/openapi-lint#paths";
+
+        path.split('/')
+            .any(|component| {
+                if component.starts_with('{') {
+                    false
+                } else {
+                    component != component.to_kebab_case()
+                }
+            })
+            .then(|| format!("The path {} doesn't use kebab-case\n{}", path, INFO,))
     }
 
     fn validate_operation_id(&self, path_method_op: (&str, &str, &Operation)) -> Option<String> {

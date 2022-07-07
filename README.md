@@ -63,6 +63,15 @@ This produces JSON like this:
 }
 ```
 
+### Paths
+
+Paths (routes) with compound-words as components should use kebab case.
+
+| | |
+| --- | --- |
+| This | `/service-processors/{sp_id}/serial-console` |
+| Not this | `/service_processors/{sp_id}/serial_console` |
+
 ### Naming
 
 In general, we use the typical Rust naming conventions.
