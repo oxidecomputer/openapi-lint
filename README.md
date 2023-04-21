@@ -187,3 +187,17 @@ pub async fn device_auth_confirm(
     // ...
 }
 ```
+
+## External Rules
+
+These rules only apply to APIs that are "external".
+
+### Rust Documentation
+
+Both `dropshot` and `schemars` use rustdoc comments as the basis for
+documentation fields (specifically `title` and `description`). As such, it's
+easy to accidentally allow internally-relevant documentation leak out as
+externally-visible in the OpenAPI document. It's not possible to simply infer
+this from text alone, but we do look for shibboleths such as a Rust path
+delimeter (`::`) and bracketed expressions with no subsequent parentheses
+(`[title](http://link.dest)` being reasonable).
