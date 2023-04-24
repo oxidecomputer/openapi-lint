@@ -552,6 +552,30 @@ Object(
 
 For more info, see https://github.com/oxidecomputer/openapi-lint#type-mismatch
 
+Rust documentation found in external interface: An error produced by a saga action
+
+On failure, actions always return an `ActionError`.  This type can represent a failure from Steno itself or a failure produced by the consumer (e.g., an action whose body fails for some reason).  The various specific errors are documented below.
+
+You can use your own error type with [`ActionError`].  As long as it meets the requirements of [`ActionData`], you can wrap your error in an [`ActionError::ActionFailed`] variant using [`ActionError::action_failed()`]. Given an [`ActionError::ActionFailed`] variant, you can get your specific type back out again using [`ActionError::convert()`].
+
+Note that the conversion back to your specific error type can fail!  This looks like a downcast, but it's not.  `ActionError`s are typically recorded in the saga log and interpreted later, possibly after a crash and recovery. Whether there was an intervening crash or not, the conversion here deserializes the error from the log into your custom error type.  This won't work if your error type is incompatible with the one that was used to serialize the error in the first place.
+
+# Example
+
+```rust use serde::Deserialize; use serde::Serialize; use steno::ActionError;
+
+#[derive(Debug, Deserialize, Serialize)] struct MyError { message: String }
+
+fn my_func_that_fails() -> Result<(), ActionError> { Err(ActionError::action_failed(MyError { message: "boom!".to_owned() })) }
+
+fn handle_error(error: ActionError) { match error.convert::<MyError>() { Ok(my_error) => { eprintln!("my action failed because: {}", my_error.message); } Err(other_error) => { eprintln!( "my action failed because the framework had a problem: {}", other_error.to_string() ); } } } ```
+For more info, see https://github.com/oxidecomputer/openapi-lint#rust-documentation
+
+Rust documentation found in external interface: A count of bytes, typically used either for memory or storage capacity
+
+The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+For more info, see https://github.com/oxidecomputer/openapi-lint#rust-documentation
+
 An object contains a property 'diskId' which is not snake_case:
 Schema {
     schema_data: SchemaData {

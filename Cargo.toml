@@ -1,9 +1,8 @@
 [package]
 name = "openapi-lint"
 description = "Validate an OpenAPI schema against some rules"
-version = "0.2.0"
-authors = ["Adam H. Levethal <ahl@oxidecomputer.com>"]
-edition = "2018"
+version = "0.3.0"
+edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/oxidecomputer/openapi-lint/"
 readme = "README.md"
@@ -13,7 +12,9 @@ categories = ["web-programming::http-server"]
 [dependencies]
 heck = "0.4.0"
 indexmap = "1.8"
+lazy_static = "1.4.0"
 openapiv3 = "1.0"
+regex = "1.7.3"
 
 [dev-dependencies]
 expectorate = "1.0"

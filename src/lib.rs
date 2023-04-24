@@ -15,10 +15,15 @@ use openapiv3::{
 
 mod walker;
 
+use regex::Regex;
 use walker::SchemaWalker;
 
 pub fn validate(spec: &OpenAPI) -> Vec<String> {
-    Validator::default().validate(spec)
+    Validator::default().validate_impl(spec, false)
+}
+
+pub fn validate_external(spec: &OpenAPI) -> Vec<String> {
+    Validator::default().validate_impl(spec, true)
 }
 
 struct Validator;
@@ -30,7 +35,7 @@ impl Default for Validator {
 }
 
 impl Validator {
-    pub fn validate(&self, spec: &OpenAPI) -> Vec<String> {
+    fn validate_impl(&self, spec: &OpenAPI, external: bool) -> Vec<String> {
         let schema = spec.walk().flat_map(|(name, schema)| {
             let subs = self.validate_subschemas(spec, schema).map(|msg| {
                 format!(
@@ -41,7 +46,15 @@ impl Validator {
             });
             let properties = self.validate_object(schema);
             let enum_values = self.validate_enumeration_value(schema);
-            subs.into_iter().chain(properties).chain(enum_values)
+            let docs = if external {
+                self.validate_schema_docs(schema)
+            } else {
+                Vec::new()
+            };
+            subs.into_iter()
+                .chain(properties)
+                .chain(enum_values)
+                .chain(docs)
         });
 
         let paths = spec
@@ -57,6 +70,13 @@ impl Validator {
         let responses = spec
             .operations()
             .flat_map(|(_, _, op)| self.validate_operation_response(spec, op));
+        let op_docs = if external {
+            spec.operations()
+                .flat_map(|(_, _, op)| op.description.as_ref().and_then(|s| check_doc_string(s)))
+                .collect()
+        } else {
+            Vec::new()
+        };
         let named_schemas = spec.components.iter().flat_map(|components| {
             components
                 .schemas
@@ -70,6 +90,7 @@ impl Validator {
             .chain(parameters)
             .chain(responses)
             .chain(named_schemas)
+            .chain(op_docs)
             .collect()
     }
 
@@ -304,6 +325,37 @@ impl Validator {
             type_name, pascal, INFO,
         ))
     }
+
+    fn validate_schema_docs(&self, schema: &Schema) -> Vec<String> {
+        let title = schema
+            .schema_data
+            .title
+            .as_ref()
+            .and_then(|s| check_doc_string(s));
+        let description = schema
+            .schema_data
+            .description
+            .as_ref()
+            .and_then(|s| check_doc_string(s));
+        [title, description].iter().flatten().cloned().collect()
+    }
+}
+
+fn check_doc_string(s: &str) -> Option<String> {
+    const INFO: &str = "For more info, see \
+            https://github.com/oxidecomputer/openapi-lint#rust-documentation";
+
+    lazy_static::lazy_static! {
+        static ref PATH: Regex = Regex::new(r#"[[:alnum:]]::[[:alpha:]]"#).unwrap();
+        static ref LINK: Regex = Regex::new(r#"\][^(]"#).unwrap();
+    }
+
+    (PATH.is_match(s) || LINK.is_match(s)).then(|| {
+        format!(
+            "Rust documentation found in external interface: {}\n{}",
+            s, INFO
+        )
+    })
 }
 
 fn is_permissive(any: &AnySchema) -> bool {
@@ -389,13 +441,13 @@ impl ComponentLookup for Response {
 mod tests {
     use heck::ToSnakeCase;
 
-    use crate::validate;
+    use crate::validate_external;
 
     #[test]
     fn bad_schema() {
         let openapi = serde_json::from_str(include_str!("tests/errors.json")).unwrap();
 
-        let actual = validate(&openapi).join("\n\n");
+        let actual = validate_external(&openapi).join("\n\n");
         expectorate::assert_contents("src/tests/errors.out", &actual);
     }
 
