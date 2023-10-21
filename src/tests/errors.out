@@ -4612,7 +4612,11 @@ Schema {
                                 extensions: {},
                             },
                             schema_kind: Type(
-                                Boolean,
+                                Boolean(
+                                    BooleanType {
+                                        enumeration: [],
+                                    },
+                                ),
                             ),
                         },
                     ),
@@ -4696,7 +4700,11 @@ Schema {
                                 extensions: {},
                             },
                             schema_kind: Type(
-                                Boolean,
+                                Boolean(
+                                    BooleanType {
+                                        enumeration: [],
+                                    },
+                                ),
                             ),
                         },
                     ),
@@ -4799,7 +4807,11 @@ Object(
                                                 extensions: {},
                                             },
                                             schema_kind: Type(
-                                                Boolean,
+                                                Boolean(
+                                                    BooleanType {
+                                                        enumeration: [],
+                                                    },
+                                                ),
                                             ),
                                         },
                                     ),

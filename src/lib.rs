@@ -112,7 +112,7 @@ impl Validator {
                     | (Type::Integer(_), Type::Integer(_))
                     | (Type::Object(_), Type::Object(_))
                     | (Type::Array(_), Type::Array(_))
-                    | (Type::Boolean {}, Type::Boolean {}) => {}
+                    | (Type::Boolean(_), Type::Boolean(_)) => {}
                     (a, b) => {
                         return Some(format!(
                             "{}\nthis schema's type\n{:#?}\ndiffers from this\n{:#?}\n\n{}",
@@ -139,7 +139,7 @@ impl Validator {
             openapiv3::SchemaKind::Not { .. } => todo!("'not' subschemas aren't handled"),
             openapiv3::SchemaKind::Type(t) => vec![t],
             openapiv3::SchemaKind::Any(any) if is_permissive(any) => vec![],
-            openapiv3::SchemaKind::Any(_) => todo!("complex 'any' schema not handled"),
+            openapiv3::SchemaKind::Any(any) => todo!("complex 'any' schema not handled {:#?}", any),
         }
     }
 
