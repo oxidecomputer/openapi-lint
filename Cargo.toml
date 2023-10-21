@@ -13,7 +13,7 @@ categories = ["web-programming::http-server"]
 heck = "0.4.0"
 indexmap = "2.0.0"
 lazy_static = "1.4.0"
-openapiv3 = "1.0.3"
+openapiv3 = "2.0.0-rc.1"
 regex = "1.7.3"
 
 [dev-dependencies]
