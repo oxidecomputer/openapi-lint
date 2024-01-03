@@ -112,7 +112,7 @@ impl Validator {
                     | (Type::Integer(_), Type::Integer(_))
                     | (Type::Object(_), Type::Object(_))
                     | (Type::Array(_), Type::Array(_))
-                    | (Type::Boolean {}, Type::Boolean {}) => {}
+                    | (Type::Boolean(_), Type::Boolean(_)) => {}
                     (a, b) => {
                         return Some(format!(
                             "{}\nthis schema's type\n{:#?}\ndiffers from this\n{:#?}\n\n{}",
