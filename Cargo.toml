@@ -9,12 +9,20 @@ readme = "README.md"
 keywords = ["openapi"]
 categories = ["web-programming::http-server"]
 
+[[bin]]
+name = "openapi-linter"
+path = "src/main.rs"
+required-features = ["serde_json", "serde_yaml"]
+doc = false
+
 [dependencies]
-heck = "0.4.0"
+heck = "0.5.0"
 indexmap = "2.0.0"
 lazy_static = "1.4.0"
 openapiv3 = "2.0.0-rc.1"
 regex = "1.7.3"
+serde_json = { version = "1.0", optional = true }
+serde_yaml = { version = "0.9", optional = true }
 
 [dev-dependencies]
 expectorate = "1.0"
