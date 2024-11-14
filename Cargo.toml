@@ -10,10 +10,10 @@ keywords = ["openapi"]
 categories = ["web-programming::http-server"]
 
 [dependencies]
-heck = "0.4.0"
+heck = "0.5.0"
 indexmap = "2.0.0"
 lazy_static = "1.4.0"
-openapiv3 = "2.0.0-rc.1"
+openapiv3 = "2.0.0"
 regex = "1.7.3"
 
 [dev-dependencies]
