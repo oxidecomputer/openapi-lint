@@ -136,7 +136,9 @@ impl Validator {
                     self.subschemas(spec, subschema.item(&spec.components).unwrap())
                 })
                 .collect(),
-            openapiv3::SchemaKind::Not { .. } => todo!("'not' subschemas aren't handled"),
+            openapiv3::SchemaKind::Not { not } => {
+                self.subschemas(spec, not.item(&spec.components).unwrap())
+            }
             openapiv3::SchemaKind::Type(t) => vec![t],
             openapiv3::SchemaKind::Any(any) if is_permissive(any) => vec![],
             openapiv3::SchemaKind::Any(any) => todo!("complex 'any' schema not handled {:#?}", any),
