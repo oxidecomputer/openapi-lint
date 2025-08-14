@@ -1802,6 +1802,14 @@
         "required": [
           "my_uuid"
         ]
+      },
+      "Marker": {
+        "not": {},
+        "x-rust-type": {
+          "crate": "my-crate",
+          "path": "my_crate::types::MyKind",
+          "version": "1.0.0"
+        }
       }
     }
   }
