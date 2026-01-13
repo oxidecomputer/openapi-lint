@@ -5682,3 +5682,6 @@ For more info, see https://github.com/oxidecomputer/openapi-lint#trivial-null-re
 
 The type "fake_id_sort_mode" has a name that is not PascalCase; to rename it add #[serde(rename = "FakeIdSortMode")]
 For more info, see https://github.com/oxidecomputer/openapi-lint#naming
+
+The operation for /hardware/racks get (operation_id: hardware_racks_get) has a summary (first line of doc comment) that ends with a period; summaries should not end with a period.
+For more info, see https://github.com/oxidecomputer/openapi-lint#rust-documentation

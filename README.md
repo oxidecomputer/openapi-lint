@@ -201,3 +201,6 @@ externally-visible in the OpenAPI document. It's not possible to simply infer
 this from text alone, but we do look for shibboleths such as a Rust path
 delimeter (`::`) and bracketed expressions with no subsequent parentheses
 (`[title](http://link.dest)` being reasonable).
+
+Additionally, operation summaries (the OpenAPI `summary` field) should be
+short phrases and **should not end with a period**.
