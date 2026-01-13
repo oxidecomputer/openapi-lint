@@ -70,9 +70,13 @@ impl Validator {
         let responses = spec
             .operations()
             .flat_map(|(_, _, op)| self.validate_operation_response(spec, op));
-        let op_summaries = spec
-            .operations()
-            .filter_map(|path_method_op| self.validate_operation_summary(path_method_op));
+        let op_summaries = if external {
+            spec.operations()
+                .filter_map(|path_method_op| self.validate_operation_summary(path_method_op))
+                .collect()
+        } else {
+            Vec::new()
+        };
         let op_docs = if external {
             spec.operations()
                 .flat_map(|(_, _, op)| op.description.as_ref().and_then(|s| check_doc_string(s)))
