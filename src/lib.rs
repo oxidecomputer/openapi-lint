@@ -284,7 +284,9 @@ impl Validator {
             if summary.trim_end().ends_with('.') {
                 let operation_id = op.operation_id.as_deref().unwrap_or("<unknown>");
                 return Some(format!(
-                    "The operation for {} {} (operation_id: \"{}\") has a summary that ends with a period; summaries should not end with a period.\n{}",
+                    "The operation for {} {} (operation_id: {}) has a summary \
+                    (first line of doc comment) that ends with a period; \
+                    summaries should not end with a period.\n{}",
                     path, method, operation_id, INFO,
                 ));
             }
