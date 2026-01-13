@@ -70,6 +70,9 @@ impl Validator {
         let responses = spec
             .operations()
             .flat_map(|(_, _, op)| self.validate_operation_response(spec, op));
+        let op_summaries = spec
+            .operations()
+            .filter_map(|path_method_op| self.validate_operation_summary(path_method_op));
         let op_docs = if external {
             spec.operations()
                 .flat_map(|(_, _, op)| op.description.as_ref().and_then(|s| check_doc_string(s)))
@@ -77,6 +80,7 @@ impl Validator {
         } else {
             Vec::new()
         };
+
         let named_schemas = spec.components.iter().flat_map(|components| {
             components
                 .schemas
@@ -90,6 +94,7 @@ impl Validator {
             .chain(parameters)
             .chain(responses)
             .chain(named_schemas)
+            .chain(op_summaries)
             .chain(op_docs)
             .collect()
     }
@@ -259,6 +264,29 @@ impl Validator {
                 path, method, INFO,
             ))
         }
+    }
+
+    fn validate_operation_summary(
+        &self,
+        path_method_op: (&str, &str, &Operation),
+    ) -> Option<String> {
+        let (path, method, op) = path_method_op;
+
+        const INFO: &str = "For more info, see \
+            https://github.com/oxidecomputer/openapi-lint#rust-documentation";
+
+        if let Some(summary) = &op.summary {
+            // summaries should be short phrases and should not end with a period
+            if summary.trim_end().ends_with('.') {
+                let operation_id = op.operation_id.as_deref().unwrap_or("<unknown>");
+                return Some(format!(
+                    "The operation for {} {} (operation_id: \"{}\") has a summary that ends with a period; summaries should not end with a period.\n{}",
+                    path, method, operation_id, INFO,
+                ));
+            }
+        }
+
+        None
     }
 
     fn validate_operation_parameters(&self, spec: &OpenAPI, op: &Operation) -> Vec<String> {

@@ -48,6 +48,7 @@
     },
     "/hardware/racks": {
       "get": {
+        "summary": "List racks in the system.",
         "description": "List racks in the system.",
         "operationId": "hardware_racks_get",
         "parameters": [
