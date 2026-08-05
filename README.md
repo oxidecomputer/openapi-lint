@@ -102,7 +102,7 @@ struct illumosIsAlwaysLowerCaseIGuess {
 Operation IDs come from the function name. If you obey the normal Rust
 convention, your functions are already snake_case. There isn't currently a
 facility to change the operation name; file an issue in
-(dropshot)[https://github.com/oxidecomputer/dropshot] if this is required.
+[dropshot](https://github.com/oxidecomputer/dropshot) if this is required.
 
 Rust `enum`s typically name variants with `PascalCase`. Typically you'll rename
 them all to `snake_case`:
@@ -135,7 +135,7 @@ is redundant. For simplicity and consistency we use the `_id` suffix instead.
 
 ### Trivial Null Response
 
-(Drophot)[https://github.com/oxidecomputer/dropshot] makes it easy (too easy!)
+[Dropshot](https://github.com/oxidecomputer/dropshot) makes it easy (too easy!)
 to accidentally return a `null` response when you intend to return an empty
 response.
 
