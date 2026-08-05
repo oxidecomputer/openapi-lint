@@ -103,7 +103,7 @@ struct illumosIsAlwaysLowerCaseIGuess {
 
 #### Generic Type Names
 
-Note that when a type is generic, the default type names `schemars` emit are 
+Note that when a type is generic, the default type names `schemars` emits are 
 *not* `PascalCase`. For example, for a type like:
 
 ```rust
@@ -114,10 +114,10 @@ struct MyGenericThing<T>{
 ```
 
 if a `MyGenericThing<bool>` occurs in the OpenAPI document, `scehmars` will
-name its schema `MyGenericThing_for_Boolean`, which falls afoul of this rule.
+name its schema `MyGenericThing_for_Boolean`, which fails the PascalCase check.
 
 When this happens, use the [`#[schemars(rename = "...")]` attribute][rename] to
-rename the type to `PascalCase`. This attribute supports interpolating the 
+rename the type. This attribute supports interpolating the 
 generic parameter(s) of the annotated type into the formatting string for
 the renaming. For example:
 
