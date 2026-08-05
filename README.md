@@ -136,6 +136,23 @@ will produce a schema named `MyGenericThingForBoolean` when instantiated for a
 > This only works with the **schemars** rename attribute. Using
 > `#[serde(rename = ...)]` does not work in this case.
 
+When choosing new names, prefer ones that are semantically meaningful to the
+consumer of the API, and avoid leaking implementation details of the server. If
+names that don't convey the semantic meaning of a schema must be used, avoid
+Rust-specifc terminology such as `VecOfFoo` or `BTreeMapFromBarToBaz`, and use
+language-agnostic terms such as `List`, `Array`, or `Map`, instead (even if the
+client is also in Rust, generated clients may not use the same Rust types as the
+server!). The default schema names produced by `schemars` for standard library
+types avoid these Rust-specific type names, so this should be preserved when
+renaming them.
+
+> [!NOTE]
+> The appearance of a Rust `Vec` in an API may also be indicative of another
+> potential issue: an un-paginated list of unbounded length. Currently,
+> `openapi-lint` does not provide a lint for such uses, since some `Vec`s may
+> have bounded lengths that are not known in the API document, but in general, 
+> prefer the use of paginated list responses.
+
 [rename]: https://docs.rs/schemars/latest/schemars/derive.JsonSchema.html#rename
 
 #### Operation IDs
