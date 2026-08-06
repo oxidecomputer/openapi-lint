@@ -86,6 +86,8 @@ property names (external tagging) or as constant values (internal or adjacent
 tagging). The choice of `snake_case` makes naming uniform regardless of the
 tagging scheme.)
 
+#### Type Names
+
 Type names are already `PascalCase` by normal Rust conventions. If you need
 (really?) to have a type with a non-PascalCase name, you can renamed it like
 this:
@@ -99,10 +101,68 @@ struct illumosIsAlwaysLowerCaseIGuess {
 }
 ```
 
+#### Generic Type Names
+
+Note that when a type is generic, the default type names `schemars` emits are 
+*not* `PascalCase`. For example, for a type like:
+
+```rust
+#[derive(JsonSchema)]
+struct MyGenericThing<T>{ 
+    value: T,
+}
+```
+
+if a `MyGenericThing<bool>` occurs in the OpenAPI document, `scehmars` will
+name its schema `MyGenericThing_for_Boolean`, which fails the PascalCase check.
+
+When this happens, use the [`#[schemars(rename = "...")]` attribute][rename] to
+rename the type. This attribute supports interpolating the 
+generic parameter(s) of the annotated type into the formatting string for
+the renaming. For example:
+
+```rust
+#[derive(JsonSchema)]
+#[schemars(rename = "MyGenericThingFor{T}")]
+struct MyGenericThing<T>{ 
+    value: T,
+}
+```
+
+will produce a schema named `MyGenericThingForBoolean` when instantiated for a
+`MyGenericThing<Bool>`.
+
+> [!IMPORTANT]
+> This only works with the **schemars** rename attribute. Using
+> `#[serde(rename = ...)]` does not work in this case.
+
+When choosing new names, prefer ones that are semantically meaningful to the
+consumer of the API, and avoid leaking implementation details of the server. If
+names that don't convey the semantic meaning of a schema must be used, avoid
+Rust-specifc terminology such as `VecOfFoo` or `BTreeMapFromBarToBaz`, and use
+language-agnostic terms such as `List`, `Array`, or `Map`, instead (even if the
+client is also in Rust, generated clients may not use the same Rust types as the
+server!). The default schema names produced by `schemars` for standard library
+types avoid these Rust-specific type names, so this should be preserved when
+renaming them.
+
+> [!NOTE]
+> The appearance of a Rust `Vec` in an API may also be indicative of another
+> potential issue: an un-paginated list of unbounded length. Currently,
+> `openapi-lint` does not provide a lint for such uses, since some `Vec`s may
+> have bounded lengths that are not known in the API document, but in general, 
+> prefer the use of paginated list responses.
+
+[rename]: https://docs.rs/schemars/latest/schemars/derive.JsonSchema.html#rename
+
+#### Operation IDs
+
 Operation IDs come from the function name. If you obey the normal Rust
 convention, your functions are already snake_case. There isn't currently a
 facility to change the operation name; file an issue in
 [dropshot](https://github.com/oxidecomputer/dropshot) if this is required.
+
+#### Enum Variants
 
 Rust `enum`s typically name variants with `PascalCase`. Typically you'll rename
 them all to `snake_case`:
