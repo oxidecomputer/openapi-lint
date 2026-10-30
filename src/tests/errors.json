@@ -46,6 +46,129 @@
         }
       }
     },
+    "/nullable/request": {
+      "put": {
+        "operationId": "nullable_request",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "nullable": true,
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "resource updated"
+          },
+          "default": {
+            "description": "unexpected response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "nullable": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/nullable/response": {
+      "get": {
+        "operationId": "nullable_response",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "nullable": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProjectView"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/nullable/request-ref": {
+      "post": {
+        "operationId": "nullable_request_ref",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/MaybeProjectCreate"
+        },
+        "responses": {
+          "204": {
+            "description": "resource updated"
+          }
+        }
+      }
+    },
+    "/nullable/named": {
+      "get": {
+        "operationId": "nullable_named",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaybeProjectView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wrapped/response": {
+      "get": {
+        "operationId": "wrapped_response",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "project": {
+                      "nullable": true,
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProjectView"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hardware/racks": {
       "get": {
         "summary": "List racks in the system.",
@@ -1059,6 +1182,40 @@
     }
   },
   "components": {
+    "requestBodies": {
+      "MaybeProjectCreate": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "nullable": true,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ProjectCreateParams"
+                }
+              ]
+            }
+          }
+        },
+        "required": true
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "schemas": {
       "ActionError": {
         "description": "An error produced by a saga action\n\nOn failure, actions always return an `ActionError`.  This type can represent a failure from Steno itself or a failure produced by the consumer (e.g., an action whose body fails for some reason).  The various specific errors are documented below.\n\nYou can use your own error type with [`ActionError`].  As long as it meets the requirements of [`ActionData`], you can wrap your error in an [`ActionError::ActionFailed`] variant using [`ActionError::action_failed()`]. Given an [`ActionError::ActionFailed`] variant, you can get your specific type back out again using [`ActionError::convert()`].\n\nNote that the conversion back to your specific error type can fail!  This looks like a downcast, but it's not.  `ActionError`s are typically recorded in the saga log and interpreted later, possibly after a crash and recovery. Whether there was an intervening crash or not, the conversion here deserializes the error from the log into your custom error type.  This won't work if your error type is incompatible with the one that was used to serialize the error in the first place.\n\n# Example\n\n```rust use serde::Deserialize; use serde::Serialize; use steno::ActionError;\n\n#[derive(Debug, Deserialize, Serialize)] struct MyError { message: String }\n\nfn my_func_that_fails() -> Result<(), ActionError> { Err(ActionError::action_failed(MyError { message: \"boom!\".to_owned() })) }\n\nfn handle_error(error: ActionError) { match error.convert::<MyError>() { Ok(my_error) => { eprintln!(\"my action failed because: {}\", my_error.message); } Err(other_error) => { eprintln!( \"my action failed because the framework had a problem: {}\", other_error.to_string() ); } } } ```",
@@ -1543,6 +1700,14 @@
             "$ref": "#/components/schemas/Name"
           }
         }
+      },
+      "MaybeProjectView": {
+        "nullable": true,
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProjectView"
+          }
+        ]
       },
       "ProjectView": {
         "description": "Client view of an [`Project`]",

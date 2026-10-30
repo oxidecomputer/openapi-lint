@@ -248,6 +248,55 @@ pub async fn device_auth_confirm(
 }
 ```
 
+### Nullable Bodies
+
+Request and response bodies should not be nullable. Consider this handler:
+
+```rust
+#[endpoint {
+    method = GET,
+    path = "/coordinator-status",
+}]
+pub async fn coordinator_status(
+    rqctx: RequestContext<Arc<ServerContext>>,
+) -> Result<HttpResponseOk<Option<CoordinatorStatus>>, HttpError> {
+    // ...
+}
+```
+
+The corresponding OpenAPI response schema will be:
+
+```json
+{
+  "nullable": true,
+  "allOf": [
+    {
+      "$ref": "#/components/schemas/CoordinatorStatus"
+    }
+  ]
+}
+```
+
+A bare `null` response is valid JSON, but it is not idiomatic. Also, older
+Dropshot versions did not generate correct OpenAPI documents for nullable
+request and response types; see
+[dropshot#1751](https://github.com/oxidecomputer/dropshot/pull/1751).
+
+Instead, wrap the optional value in a struct:
+
+```rust
+#[derive(Deserialize, JsonSchema, Serialize)]
+pub struct CoordinatorStatusResponse {
+    pub status: Option<CoordinatorStatus>,
+}
+```
+
+Alternatively, if `None` means that the resource doesn't exist, return a 404 Not
+Found error.
+
+The same applies to request bodies: rather than `TypedBody<Option<MyParams>>`,
+accept a struct with an `Option<MyParams>` member.
+
 ## External Rules
 
 These rules only apply to APIs that are "external".
