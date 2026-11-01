@@ -5680,6 +5680,24 @@ For more info, see https://github.com/oxidecomputer/openapi-lint#naming
 The return type for unit_return was a trivial null.
 For more info, see https://github.com/oxidecomputer/openapi-lint#trivial-null-response
 
+The request body (application/json) for nullable_request is nullable. Rather than using an Option<T> as the body, use a struct with an Option<T> member.
+For more info, see https://github.com/oxidecomputer/openapi-lint#nullable-bodies
+
+The request body (application/x-www-form-urlencoded) for nullable_request is nullable. Rather than using an Option<T> as the body, use a struct with an Option<T> member.
+For more info, see https://github.com/oxidecomputer/openapi-lint#nullable-bodies
+
+The default response body (application/json) for nullable_request is nullable. Rather than using an Option<T> as the body, return a 404 Not Found error if the resource does not exist, or use a struct with an Option<T> member.
+For more info, see https://github.com/oxidecomputer/openapi-lint#nullable-bodies
+
+The response body for status 200 (application/json) for nullable_response is nullable. Rather than using an Option<T> as the body, return a 404 Not Found error if the resource does not exist, or use a struct with an Option<T> member.
+For more info, see https://github.com/oxidecomputer/openapi-lint#nullable-bodies
+
+The request body (application/json) for nullable_request_ref is nullable. Rather than using an Option<T> as the body, use a struct with an Option<T> member.
+For more info, see https://github.com/oxidecomputer/openapi-lint#nullable-bodies
+
+The response body for status 200 (application/json) for nullable_named is nullable. Rather than using an Option<T> as the body, return a 404 Not Found error if the resource does not exist, or use a struct with an Option<T> member.
+For more info, see https://github.com/oxidecomputer/openapi-lint#nullable-bodies
+
 The type "fake_id_sort_mode" has a name that is not PascalCase; to rename it add #[serde(rename = "FakeIdSortMode")]
 For more info, see https://github.com/oxidecomputer/openapi-lint#naming
 

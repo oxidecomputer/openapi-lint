@@ -6,11 +6,13 @@
 //! generators would have a hard time turning into easy-to-use native
 //! constructs.
 
+use std::fmt;
+
 use heck::{ToKebabCase, ToPascalCase, ToShoutySnakeCase, ToSnakeCase};
 use indexmap::IndexMap;
 use openapiv3::{
-    AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, Response, Schema,
-    SchemaKind, StringType, Type, VariantOrUnknownOrEmpty,
+    AnySchema, Components, OpenAPI, Operation, Parameter, ReferenceOr, RequestBody, Response,
+    Schema, SchemaKind, StatusCode, StringType, Type, VariantOrUnknownOrEmpty,
 };
 
 mod walker;
@@ -70,6 +72,9 @@ impl Validator {
         let responses = spec
             .operations()
             .flat_map(|(_, _, op)| self.validate_operation_response(spec, op));
+        let bodies = spec
+            .operations()
+            .flat_map(|(_, _, op)| self.validate_operation_bodies(spec, op));
         let op_summaries = if external {
             spec.operations()
                 .filter_map(|path_method_op| self.validate_operation_summary(path_method_op))
@@ -97,6 +102,7 @@ impl Validator {
             .chain(operations)
             .chain(parameters)
             .chain(responses)
+            .chain(bodies)
             .chain(named_schemas)
             .chain(op_summaries)
             .chain(op_docs)
@@ -346,6 +352,63 @@ impl Validator {
             .collect()
     }
 
+    fn validate_operation_bodies(&self, spec: &OpenAPI, op: &Operation) -> Vec<String> {
+        const INFO: &str = "For more info, see \
+            https://github.com/oxidecomputer/openapi-lint#nullable-bodies";
+
+        let operation_id = op.operation_id.as_deref().unwrap_or("<unknown>");
+
+        let request = op.request_body.iter().filter_map(|body| {
+            Some((BodyLocation::Request, &body.item(&spec.components)?.content))
+        });
+        let default_response = op.responses.default.iter().filter_map(|response| {
+            Some((
+                BodyLocation::DefaultResponse,
+                &response.item(&spec.components)?.content,
+            ))
+        });
+        let code_responses = op
+            .responses
+            .responses
+            .iter()
+            .filter_map(|(code, response)| {
+                Some((
+                    BodyLocation::Response(code),
+                    &response.item(&spec.components)?.content,
+                ))
+            });
+
+        request
+            .chain(default_response)
+            .chain(code_responses)
+            .flat_map(|(location, content)| {
+                content
+                    .iter()
+                    .map(move |(content_type, media_type)| (location, content_type, media_type))
+            })
+            .filter_map(|(location, content_type, media_type)| {
+                let schema = media_type.schema.as_ref()?.item(&spec.components)?;
+                schema.schema_data.nullable.then(|| {
+                    let remedy = match location {
+                        BodyLocation::Request => {
+                            "Rather than using an Option<T> as the body, use a \
+                            struct with an Option<T> member."
+                        }
+                        BodyLocation::DefaultResponse | BodyLocation::Response(_) => {
+                            "Rather than using an Option<T> as the body, return \
+                            a 404 Not Found error if the resource does not exist, \
+                            or use a struct with an Option<T> member."
+                        }
+                    };
+                    format!(
+                        "The {} ({}) for {} is nullable. {}\n{}",
+                        location, content_type, operation_id, remedy, INFO,
+                    )
+                })
+            })
+            .collect()
+    }
+
     fn validate_named_schema(&self, type_name: &str) -> Option<String> {
         const INFO: &str = "For more info, see \
             https://github.com/oxidecomputer/openapi-lint#naming";
@@ -374,6 +437,23 @@ impl Validator {
             .as_ref()
             .and_then(|s| check_doc_string(s));
         [title, description].iter().flatten().cloned().collect()
+    }
+}
+
+#[derive(Clone, Copy)]
+enum BodyLocation<'a> {
+    Request,
+    DefaultResponse,
+    Response(&'a StatusCode),
+}
+
+impl fmt::Display for BodyLocation<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            BodyLocation::Request => write!(f, "request body"),
+            BodyLocation::DefaultResponse => write!(f, "default response body"),
+            BodyLocation::Response(code) => write!(f, "response body for status {}", code),
+        }
     }
 }
 
@@ -464,6 +544,12 @@ impl ComponentLookup for Parameter {
 impl ComponentLookup for Schema {
     fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>> {
         &components.schemas
+    }
+}
+
+impl ComponentLookup for RequestBody {
+    fn get_components(components: &Components) -> &IndexMap<String, ReferenceOr<Self>> {
+        &components.request_bodies
     }
 }
 
