@@ -395,9 +395,9 @@ impl Validator {
                             struct with an Option<T> member."
                         }
                         BodyLocation::DefaultResponse | BodyLocation::Response(_) => {
-                            "Rather than using an Option<T> as the body, use a \
-                            struct with an Option<T> member, or return a 404 \
-                            Not Found error if the resource does not exist."
+                            "Rather than using an Option<T> as the body, return \
+                            a 404 Not Found error if the resource does not exist, \
+                            or use a struct with an Option<T> member."
                         }
                     };
                     format!(

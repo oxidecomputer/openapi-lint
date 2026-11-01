@@ -282,20 +282,22 @@ Dropshot versions did not generate correct OpenAPI documents for nullable
 request and response types; see
 [dropshot#1751](https://github.com/oxidecomputer/dropshot/pull/1751).
 
-Instead, wrap the optional value in a struct:
+For response bodies:
 
-```rust
-#[derive(Deserialize, JsonSchema, Serialize)]
-pub struct CoordinatorStatusResponse {
-    pub status: Option<CoordinatorStatus>,
-}
-```
+* If `None` means that the resource doesn't exist, return a 404 Not Found error.
 
-Alternatively, if `None` means that the resource doesn't exist, return a 404 Not
-Found error.
+* Alternatively, wrap the optional value in a struct:
 
-The same applies to request bodies: rather than `TypedBody<Option<MyParams>>`,
-accept a struct with an `Option<MyParams>` member.
+  ```rust
+  #[derive(Deserialize, JsonSchema, Serialize)]
+  pub struct CoordinatorStatusResponse {
+      pub status: Option<CoordinatorStatus>,
+  }
+  ```
+
+For request bodies, follow the wrapper struct pattern: rather than
+`TypedBody<Option<MyParams>>`, accept a struct with an `Option<MyParams>`
+member.
 
 ## External Rules
 
